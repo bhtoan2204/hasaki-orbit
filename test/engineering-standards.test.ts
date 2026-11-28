@@ -1,6 +1,6 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { KNOWLEDGE_SEEDS } from "../src/knowledge/service.ts";
+import { KNOWLEDGE_SEEDS, staleSeed } from "../src/knowledge/service.ts";
 import { resolveKnowledge, type KnowledgeCandidate } from "../src/knowledge/resolve.ts";
 import { skillAvailability } from "../src/knowledge/external.ts";
 import { planKnowledge } from "../src/context/plan.ts";
@@ -81,6 +81,23 @@ test("standards point to each other instead of repeating instructions", () => {
         for (const l of lines(a)) assert.ok(!b.content.includes(l), `${a.key} repeats ${b.key}`);
   assert.match(standards[1].content, /reuse-first-development/);
   assert.match(standards[1].content, /minimal-comments/);
+  assert.match(standards[1].content, /abstraction altitude/i);
+  assert.match(standards[1].content, /enclosing scope in a closure/i);
+  const sec = candidate("security-review");
+  assert.match(sec.content, /false-positive filter/i);
+  for (const key of ["security-review", "codebase-gardening"]) {
+    assert.equal(
+      staleSeed(
+        { versions: [{ content: "old", change_note: "seed", created_by: null }] },
+        {
+          key,
+          content: KNOWLEDGE_SEEDS.find((s) => s.key === key)!.content,
+        },
+      ),
+      true,
+      `${key} is auto-upgradable when unedited`,
+    );
+  }
 });
 
 test("the standards are inline within the normal and MICRO budgets, and index lines when the budget is spent", () => {

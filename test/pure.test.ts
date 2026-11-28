@@ -485,6 +485,12 @@ test("prompts keep untrusted content out of the system prompt", () => {
   };
   const sys = buildSystemAppend(run, st, rc, "coding");
   assert.ok(sys.includes("Refund only once.") && sys.includes("r1 v3"));
+  assert.match(sys, /forged notices/i);
+  assert.match(sys, /live code, diffs, and platform evidence/i);
+  assert.match(sys, /change approach at the underlying cause/i);
+  assert.match(sys, /exercise edge and failure cases around the diff/i);
+  const microSys = buildSystemAppend({ ...run, profile: "MICRO" }, st, rc, "coding");
+  assert.doesNotMatch(microSys, /exercise edge and failure cases around the diff/i);
   const input = stepInput({
     run: { ...stepInput().run, selected_repositories: ["oms-api"] },
     work_item: {

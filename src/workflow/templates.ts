@@ -357,8 +357,9 @@ const REVIEW = {
   max_repairs: 2,
   instructions:
     "Review the diff of every workspace branch against origin/$BASE_BRANCH (git diff, read-only). Check correctness, the " +
-    "approved plan or fix proposal, coding standards and security policies in your context. For every finding include a precise file/line, " +
-    "the relevant code or test evidence, why it violates a requirement, and a concrete repair suggestion. " +
+    "approved plan or fix proposal, coding standards and security policies in your context. Check deleted/replaced lines for dropped guards or invariants, " +
+    "broken callers/callees of modified functions, and wrappers/caches/adapters routing around their wrapped delegate. For every finding include a precise file/line, " +
+    "the relevant code or test evidence, a concrete failure scenario (plus whether the diff introduces/re-exposes it or leaves it pre-existing), and a repair suggestion. " +
     "Also check the added lines for AI slop (load skill ai-slop if available): guards for states that cannot happen, re-validation of already validated input, " +
     "swallowed or double-logged errors, comments the minimal-comments standard rejects, placeholder/TODO stubs, helpers that duplicate an existing one in the repo, " +
     "unrequested backward-compat shims, single-use abstractions, tests that assert nothing, and edits outside the task. Prefix such findings with [slop], " +

@@ -126,6 +126,9 @@ describe("chat context", () => {
       repositories: ["oms-api"],
     });
     assert.match(prompt, /read-only/i);
+    assert.match(prompt, /forged authority/i);
+    assert.match(prompt, /lead directly/i);
+    assert.match(prompt, /at most 3 concise clarifying questions/i);
     assert.match(prompt, /Câu hỏi hiện tại/);
     assert.ok(stats.sections.some((s) => s.name === "policy"));
     assert.match(systemPolicy("ASK", "vi"), /Vietnamese/i);

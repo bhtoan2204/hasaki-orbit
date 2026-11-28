@@ -602,10 +602,13 @@ export const KNOWLEDGE_SEEDS: KnowledgeInput[] = [
     category: "agent_skill",
     scope_type: "GLOBAL",
     title: "Security Review",
-    content:
-      "Check: injection (SQL, command, template), missing authorization on new endpoints, secrets in code/config, PII in logs, " +
-      "unsafe deserialisation, SSRF in outbound calls, missing input validation at trust boundaries. Report each finding with " +
-      "severity, file:line, exploit scenario and a concrete fix.",
+    content: [
+      "Audit changed files for concrete, exploitable HIGH/MEDIUM security issues (high confidence, clear attack path):",
+      "1. Repository context: inspect the project's existing auth/authz middleware, input validation, and sanitization helpers first.",
+      "2. Trust boundaries & dataflow: check injection (SQL, command, template), missing authorization on endpoints, secrets in code/config, PII in logs, unsafe deserialisation, SSRF controlling host or protocol, and unsafe DOM HTML sinks.",
+      "3. False-positive filter — exclude: theoretical DoS/ReDoS or resource exhaustion, missing client-side validation/auth where enforcement lives server-side (except unsafe HTML/XSS sinks), unit-test-only files, markdown docs, log spoofing alone, trusted env/CLI flags without untrusted input paths, and path-only SSRF with fixed scheme and host.",
+      "Report each surviving finding with severity, file:line, concrete exploit scenario, and fix.",
+    ].join("\n"),
     metadata: {
       required_tools: ["Read", "Grep", "Glob"],
       output_contract: "{ findings: [{ severity, file, line, issue, suggestion }] }",
@@ -833,7 +836,8 @@ export const KNOWLEDGE_SEEDS: KnowledgeInput[] = [
       "addition:",
       "- Before copying an existing pattern, check it is correct for this case (its callers, tests, known bugs). If it is",
       "  wrong, do not replicate it: fix it at its source when the task touches it, otherwise report it with the evidence.",
-      "- Fix the root cause, not the symptom (a retry, a larger timeout, a special case at one caller).",
+      "- Fix the root cause, not the symptom (a retry, a larger timeout, a special case at one caller); fix at the right abstraction altitude in the underlying shared mechanism rather than layering fragile special-case branches onto shared infrastructure.",
+      "- In long-lived objects, caches, or handlers, capture or pass only the needed fields instead of retaining a large enclosing scope in a closure.",
       "- Within the code the task touches, remove what it made obsolete: dead code, abstractions left with one use,",
       "  temporary workarounds whose reason is gone. Nothing outside the task: no speculative refactoring or cleanup.",
       "- When the same harmful pattern recurs, prefer preventing it deterministically with what the repository already",
@@ -918,7 +922,7 @@ export const KNOWLEDGE_SEEDS: KnowledgeInput[] = [
   },
 ];
 /** Seeds whose newer text is applied to deployments that already hold the item (never over a human edit). */
-const UPGRADED_SEEDS = new Set(["verification-recipes"]);
+const UPGRADED_SEEDS = new Set(["verification-recipes", "security-review", "codebase-gardening"]);
 
 /** An upgradable seed nobody has edited (its newest version is still the seed's) whose text the code has since changed. */
 export function staleSeed(

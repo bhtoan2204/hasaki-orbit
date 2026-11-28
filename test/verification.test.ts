@@ -102,6 +102,43 @@ test("independent review is told to read platform artifacts instead of asking th
   );
   assert.match(sys, /mcp__platform__read_artifact/);
   assert.match(sys, /Do not ask the developer to paste a log/);
+  assert.match(sys, /deleted or replaced line/i);
+  assert.match(sys, /CONFIRMED.*PLAUSIBLE.*REFUTED/);
+  assert.doesNotMatch(sys, /DEEP sweep:/);
+  const deepSys = buildSystemAppend(
+    {
+      id: 95,
+      definition_key: "feature",
+      title: "t",
+      profile: "DEEP",
+      allowed_repositories: [] as string[],
+    } as RunRow,
+    {
+      id: 1,
+      run_id: 95,
+      key: "review",
+      name: "Review",
+      type: "agent",
+      position: 0,
+      depends_on: [],
+      config: { independent: true, instructions: "Review the change." },
+      run_if: null,
+      requires_approval: false,
+      max_attempts: 1,
+      retry_backoff_s: 0,
+      status: "RUNNING",
+      generation: 1,
+      attempt_count: 1,
+      current_attempt_id: null,
+      output: null,
+      pending_input: null,
+      approval: null,
+      error: null,
+    },
+    emptyContext,
+    "analysis",
+  );
+  assert.match(deepSys, /DEEP sweep:/);
 });
 
 test("context isolation: the verifier never sees the author's claims, only requirements and platform evidence", () => {
